@@ -26,17 +26,11 @@ function handleFile(){
 }
 
 function gameLoop(){
-    
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawTiles(newMap,ctx,a,map.tileheight,mapWidth,chunk);
     playerBox.update();
-    if(playerBox.x >= canvas.width){
-        chunk++
-        playerBox.x = 0;
-    }
-    if(chunk > 2){
-        chunk = 0;
-    }
+    chunk = changeChunk(playerBox,chunk,ctx);
+    console.log(chunk);
     playerBox.draw();
 }
 
@@ -91,26 +85,31 @@ function mapArray(map){
     return newArray;
 }
 
-function changeChunk(playerX, playerY,map,ctx,tilesheet,tileSideLength,width,chunk){
-    chunk++;
-    let x = 0; 
-    let y = 0;
-    let scale = (ctx.canvas.width / width) / tileSideLength;
-    let tileSheetWidth = tilesheet.width / tileSideLength;
-    for(let i = ctx.canvas.width; i>0; i--){
-        x = i;
-        for(let row = 0; row<map[chunk].length; row++){
-            for(let col = 0; col<map[chunk][row].length; col++){
-                if(map[chunk][row][col] != 0){
-                    ctx.drawImage(tilesheet,
-                        ((map[chunk][row][col]-1) % tileSheetWidth) * tileSideLength, Math.floor((map[chunk][row][col] -1) / tileSheetWidth) * tileSideLength,
-                        tileSideLength, tileSideLength,
-                        x,y,
-                        tileSideLength * scale, tileSideLength * scale);
-                }
-                x += tileSideLength;
-            }
-            y += tileSideLength;
-        }
+function changeChunk(player,chunk,map,ctx){
+    console.log(chunk);
+
+    //Check if player is trying to go to right chunk and only allow if player is not at far right column 
+    if(player.x >= canvas.width && (chunk + 1) % 10 != 0){//chunkWidth
+        chunk++;
+        player.x = player.width;
+        return chunk;
     }
+    //Check if player is trying to go to left chunk and only allow if player is not at the far left column
+    else if(player.x <= 0 && chunk % 10 != 0){
+        chunk--;
+        player.x = canvas.width - player.width;
+        return chunk;
+    }
+    //Check if player is trying to go to upper chunk, and only allow if player is not at top chunk row
+    if(player.y <= 0 && chunk > 9){
+        chunk-= 10;
+        player.y = canvas.heigth - player.width;
+        return chunk;
+    }
+    else if(player.y >= canvas.height && chunk < 990){
+        chunk += 10;
+        player.y = player.height;
+        return chunk;
+    }
+    return chunk;
 }

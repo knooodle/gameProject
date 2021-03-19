@@ -3,12 +3,13 @@ let playerBox = {
     y:100,
     width:20,
     height:20,
-    xSpeed:100,
-    ySpeed:1
+    xSpeed:0,
+    ySpeed:-10
 };
 
 playerBox.update = function(){
     this.x+=this.xSpeed;
+    this.y += this.ySpeed;
 };
 
 playerBox.draw = function(){
@@ -19,7 +20,7 @@ playerBox.draw = function(){
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let things = 2;
-let chunk = 0;
+let chunk = 14;
 
 let mapWidth = 30;
 
